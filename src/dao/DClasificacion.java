@@ -16,18 +16,18 @@ public class DClasificacion implements IOperacion{
 	public List<Clasificacion> lista;
     private Conexion conexion = new Conexion();
     private Connection conn; // Gestiona la conexion.
-    private PreparedStatement mostrarCargos;
-    private PreparedStatement insertarCargo;
-    private PreparedStatement modificarCargo;
-    private PreparedStatement eliminarCargo;
+    private PreparedStatement mostrarClasificacion;
+    private PreparedStatement insertarClasificacion;
+    private PreparedStatement modificarClasificacion;
+    private PreparedStatement eliminarClasificacion;
     
     public DClasificacion() {
     	try {
             conn = conexion.obtenerConexion();
-            mostrarCargos = conn.prepareStatement("Select * from Clasificacion");
-            insertarCargo = conn.prepareStatement("Insert Into Clasificacion(nombre, abrevacion, activo ) Values(?, ?, ?)");
-            modificarCargo = conn.prepareStatement("Update Clasificacion Set nombre = ?, abreviacion = ?, activo = ? Where idClasificacion= ?");
-            eliminarCargo = conn.prepareStatement("Delete from Clasificacion Where idClasificacion = ?");
+            mostrarClasificacion = conn.prepareStatement("Select * from Clasificacion");
+            insertarClasificacion = conn.prepareStatement("Insert Into Clasificacion(nombre, abreviacion, activo ) Values(?, ?, ?)");
+            modificarClasificacion = conn.prepareStatement("Update Clasificacion Set nombre = ?, abreviacion = ?, activo = ? Where idClasificacion= ?");
+            eliminarClasificacion = conn.prepareStatement("Delete from Clasificacion Where idClasificacion = ?");
             
             lista = new ArrayList<>();
             lista = MostrarDatos();
@@ -40,17 +40,47 @@ public class DClasificacion implements IOperacion{
 	@Override
 	public int Guardar(Object o) {
 		// TODO Auto-generated method stub
-		return 0;
+		Clasificacion c = new Clasificacion();
+		c = (Clasificacion) o;
+		int b = 0;
+		try {
+			insertarClasificacion.setString(1, c.getNombre());
+			insertarClasificacion.setString(2, c.getAbreviacion());
+			insertarClasificacion.setBoolean(3, true);
+			b = insertarClasificacion.executeUpdate();
+		}catch(Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+		return b;
 	}
 	@Override
 	public int Editar(Object o) {
 		// TODO Auto-generated method stub
-		return 0;
+		int b = 0;
+		Clasificacion c = new Clasificacion();
+		c = (Clasificacion) o;
+		try {
+			modificarClasificacion.setString(1, c.getNombre());
+			modificarClasificacion.setString(2, c.getAbreviacion());
+			modificarClasificacion.setBoolean(3, true);
+			b =modificarClasificacion.executeUpdate();
+		}catch(Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+		return  b;
 	}
 	@Override
 	public int Eliminar(Object o) {
+		int id = (int) o;
 		// TODO Auto-generated method stub
-		return 0;
+		int b = 0;
+		try {
+			eliminarClasificacion.setInt(1, id);
+			b = eliminarClasificacion.executeUpdate();
+		}catch(Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+		return b;
 	}
 
 	
@@ -59,7 +89,7 @@ public class DClasificacion implements IOperacion{
 		ArrayList<Clasificacion> result = null;
         ResultSet rs = null;
         try {
-            rs = mostrarCargos.executeQuery();
+            rs = mostrarClasificacion.executeQuery();
             result = new ArrayList<>();
             while (rs.next()) {
                 result.add(new Clasificacion(
